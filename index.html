@@ -1,0 +1,2480 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>直播服务资产体系 Demo</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f6fa;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --ink: #17202f;
+        --muted: #647084;
+        --line: #dde4ef;
+        --blue: #246bfe;
+        --blue-soft: #eaf1ff;
+        --green: #0f9f72;
+        --green-soft: #e8f7f0;
+        --amber: #e89112;
+        --amber-soft: #fff4dc;
+        --rose: #e55766;
+        --rose-soft: #fff0f2;
+        --purple: #7357e8;
+        --purple-soft: #f0edff;
+        --dark: #202838;
+        --shadow: 0 14px 34px rgba(28, 38, 58, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(180deg, #eef3fb 0%, var(--bg) 320px),
+          var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        letter-spacing: 0;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 248px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 18px 14px;
+        border-right: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 6px 18px;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: var(--dark);
+        color: #fff;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.18;
+      }
+
+      .brand p {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .nav {
+        display: grid;
+        gap: 6px;
+      }
+
+      .nav-btn {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+        min-height: 44px;
+        padding: 0 10px;
+        border-radius: 8px;
+        background: transparent;
+        color: #3a4456;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 780;
+      }
+
+      .nav-btn i {
+        width: 18px;
+        height: 18px;
+        color: var(--muted);
+      }
+
+      .nav-btn small {
+        padding: 3px 7px;
+        border-radius: 999px;
+        background: #edf1f6;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .nav-btn.active {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .nav-btn.active i {
+        color: var(--blue);
+      }
+
+      .side-card {
+        margin-top: 18px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel-soft);
+      }
+
+      .side-card strong {
+        display: block;
+        font-size: 13px;
+      }
+
+      .side-card p {
+        margin: 6px 0 10px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.48;
+      }
+
+      .main {
+        min-width: 0;
+        padding: 18px 22px 78px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .page-title h2 {
+        margin: 0;
+        font-size: 23px;
+        line-height: 1.2;
+      }
+
+      .page-title p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 0 0 auto;
+      }
+
+      .select {
+        height: 38px;
+        min-width: 144px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        padding: 0 10px;
+        outline: 0;
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .icon-btn,
+      .text-btn,
+      .primary-btn,
+      .ghost-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 820;
+      }
+
+      .icon-btn {
+        width: 38px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .text-btn {
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .primary-btn {
+        padding: 0 13px;
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .ghost-btn {
+        padding: 0 13px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .icon-btn i,
+      .text-btn i,
+      .primary-btn i,
+      .ghost-btn i {
+        width: 16px;
+        height: 16px;
+      }
+
+      .view {
+        display: none;
+      }
+
+      .view.active {
+        display: block;
+      }
+
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .grid.two {
+        grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid.four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .panel {
+        position: relative;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .panel.pad {
+        padding: 14px;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.25;
+        font-weight: 860;
+      }
+
+      .panel-meta {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.48;
+      }
+
+      .metric {
+        position: relative;
+        min-height: 124px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 10px 24px rgba(28, 38, 58, 0.06);
+      }
+
+      .metric-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 780;
+      }
+
+      .metric-label i {
+        width: 16px;
+        height: 16px;
+      }
+
+      .metric-value {
+        margin-top: 12px;
+        font-size: 30px;
+        line-height: 1;
+        font-weight: 920;
+      }
+
+      .metric-note {
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .up {
+        color: var(--green);
+        font-weight: 880;
+      }
+
+      .warn {
+        color: var(--amber);
+        font-weight: 880;
+      }
+
+      .danger {
+        color: var(--rose);
+        font-weight: 880;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 7px;
+        border-radius: 999px;
+        background: #eef2f7;
+        color: #445066;
+        font-size: 11px;
+        font-weight: 840;
+        white-space: nowrap;
+      }
+
+      .tag.blue {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .tag.green {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .tag.amber {
+        background: var(--amber-soft);
+        color: #a45e00;
+      }
+
+      .tag.rose {
+        background: var(--rose-soft);
+        color: var(--rose);
+      }
+
+      .tag.purple {
+        background: var(--purple-soft);
+        color: var(--purple);
+      }
+
+      .tag i {
+        width: 12px;
+        height: 12px;
+      }
+
+      .term {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-bottom: 1px dotted rgba(100, 112, 132, 0.75);
+        color: inherit;
+      }
+
+      .term::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: 0;
+        top: calc(100% + 8px);
+        z-index: 20;
+        width: min(260px, 78vw);
+        padding: 9px 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: #334057;
+        box-shadow: 0 16px 34px rgba(28, 38, 58, 0.16);
+        font-size: 12px;
+        line-height: 1.5;
+        font-weight: 650;
+        white-space: normal;
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        transition: 0.16s ease;
+      }
+
+      .term:hover::after,
+      .term:focus-visible::after {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .note-dot {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        background: var(--dark);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+        box-shadow: 0 8px 18px rgba(23, 32, 47, 0.18);
+      }
+
+      .note-dot.ai {
+        background: linear-gradient(135deg, var(--purple), var(--blue));
+      }
+
+      .note-dot.edge {
+        background: linear-gradient(135deg, var(--amber), var(--rose));
+      }
+
+      .corner-note {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 2;
+      }
+
+      .chart {
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .bar-row {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr) 56px;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .bar-track {
+        height: 9px;
+        border-radius: 999px;
+        background: #edf2f7;
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--blue), var(--green));
+      }
+
+      .funnel {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .funnel-step {
+        min-height: 120px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .funnel-step strong {
+        display: block;
+        margin-top: 12px;
+        font-size: 14px;
+      }
+
+      .funnel-step span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .funnel-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .table th,
+      .table td {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: middle;
+      }
+
+      .table th {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 850;
+        background: var(--panel-soft);
+      }
+
+      .table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .table strong {
+        display: block;
+        font-size: 13px;
+      }
+
+      .table small {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .list {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .list-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .avatar {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .avatar.blue {
+        background: linear-gradient(145deg, #246bfe, #41c2ff);
+      }
+
+      .avatar.green {
+        background: linear-gradient(145deg, #0f9f72, #8bd35f);
+      }
+
+      .avatar.amber {
+        background: linear-gradient(145deg, #e89112, #ffd059);
+      }
+
+      .avatar.rose {
+        background: linear-gradient(145deg, #e55766, #ff91a0);
+      }
+
+      .item-copy {
+        min-width: 0;
+      }
+
+      .item-copy strong {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 14px;
+      }
+
+      .item-copy span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.42;
+      }
+
+      .asset-lane {
+        display: grid;
+        grid-template-columns: 0.85fr 1.15fr;
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .source-card,
+      .asset-card {
+        position: relative;
+        padding: 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .source-card h4,
+      .asset-card h4 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 0 0 10px;
+        font-size: 14px;
+      }
+
+      .source-card p,
+      .asset-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .asset-card.large {
+        display: grid;
+        gap: 12px;
+      }
+
+      .ai-flow {
+        display: grid;
+        gap: 9px;
+      }
+
+      .ai-step {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .ai-step-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--purple-soft);
+        color: var(--purple);
+      }
+
+      .ai-step strong {
+        display: block;
+        font-size: 13px;
+      }
+
+      .ai-step span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.42;
+      }
+
+      .clip-builder {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid #d7e4f4;
+        border-radius: 8px;
+        background: #f8fbff;
+      }
+
+      .clip-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .clip-frame {
+        min-height: 78px;
+        padding: 8px;
+        border-radius: 8px;
+        background: #202838;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .clip-frame:nth-child(2) {
+        background: #246bfe;
+      }
+
+      .clip-frame:nth-child(3) {
+        background: #0f9f72;
+      }
+
+      .teacher-line {
+        padding: 11px;
+        border-radius: 8px;
+        background: var(--amber-soft);
+        color: #604006;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .mini-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .mini-metric {
+        padding: 10px;
+        border-radius: 8px;
+        background: var(--panel-soft);
+      }
+
+      .mini-metric strong {
+        display: block;
+        font-size: 17px;
+      }
+
+      .mini-metric span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .proof-card {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(36, 107, 254, 0.1), rgba(15, 159, 114, 0.1)),
+          #fff;
+        border: 1px solid #d7e4f4;
+      }
+
+      .code-shot {
+        position: relative;
+        min-height: 138px;
+        border-radius: 8px;
+        background:
+          linear-gradient(145deg, #1b2332, #26364c),
+          repeating-linear-gradient(90deg, transparent 0 18px, rgba(255, 255, 255, 0.04) 18px 19px);
+        overflow: hidden;
+      }
+
+      .code-shot::before {
+        content: "";
+        position: absolute;
+        left: 18px;
+        top: 20px;
+        width: 62%;
+        height: 9px;
+        border-radius: 4px;
+        background: #37e6a6;
+        box-shadow:
+          0 24px 0 #5eb1ff,
+          0 48px 0 #ffd166,
+          0 72px 0 #ff8fa3;
+      }
+
+      .code-shot::after {
+        content: "";
+        position: absolute;
+        right: 20px;
+        bottom: 18px;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 35% 34%, #fff 0 8px, transparent 9px),
+          conic-gradient(from 120deg, #37e6a6, #5eb1ff, #ffd166, #37e6a6);
+      }
+
+      .quality {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .quality div {
+        padding: 10px;
+        border-radius: 8px;
+        background: var(--panel-soft);
+      }
+
+      .quality strong {
+        display: block;
+        font-size: 16px;
+      }
+
+      .quality span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .speaker-shell {
+        border: 1px solid #d8dfe9;
+        border-radius: 8px;
+        background: #f5f6f8;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      .speaker-top {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(90px, 1fr)) auto;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #fff;
+      }
+
+      .video-tile {
+        position: relative;
+        height: 78px;
+        border-radius: 8px;
+        background: linear-gradient(145deg, #f5d8c8, #d6e6f7);
+        overflow: hidden;
+      }
+
+      .video-tile:nth-child(2n) {
+        background: linear-gradient(145deg, #e7eef8, #f9dbc7);
+      }
+
+      .video-face {
+        position: absolute;
+        left: 50%;
+        top: 14px;
+        width: 46px;
+        height: 46px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 36% 40%, #2c2f36 0 3px, transparent 4px),
+          radial-gradient(circle at 64% 40%, #2c2f36 0 3px, transparent 4px),
+          radial-gradient(circle at 50% 62%, #fb8b8b 0 5px, transparent 6px),
+          #ffd8bf;
+      }
+
+      .coin {
+        position: absolute;
+        right: 6px;
+        top: 6px;
+        padding: 3px 6px;
+        border-radius: 6px;
+        background: rgba(35, 42, 53, 0.56);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .mic-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 22px;
+        padding: 0 7px;
+        background: rgba(28, 32, 38, 0.46);
+        color: #fff;
+        font-size: 11px;
+      }
+
+      .speaker-body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 310px;
+        min-height: 560px;
+      }
+
+      .course-stage {
+        position: relative;
+        margin: 12px;
+        border-radius: 8px;
+        background: #fff;
+        border: 2px solid #ffb28b;
+        overflow: hidden;
+      }
+
+      .stage-title {
+        position: absolute;
+        left: 24px;
+        top: 22px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #3e4757;
+        font-size: 28px;
+        font-weight: 920;
+      }
+
+      .block-demo {
+        position: absolute;
+        left: 24%;
+        top: 42%;
+        display: grid;
+        gap: 16px;
+        width: 48%;
+      }
+
+      .block {
+        min-height: 54px;
+        padding: 12px 18px;
+        border-radius: 8px;
+        background: #1292f5;
+        color: #fff;
+        font-size: 22px;
+        font-weight: 900;
+        box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      .block small {
+        opacity: 0.76;
+        font-size: 18px;
+      }
+
+      .stage-character {
+        position: absolute;
+        left: 28px;
+        bottom: 36px;
+        width: 82px;
+        height: 132px;
+        border-radius: 16px 16px 22px 22px;
+        background: #ff783d;
+      }
+
+      .stage-character::before,
+      .stage-character::after {
+        content: "";
+        position: absolute;
+        top: 24px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+      }
+
+      .stage-character::before {
+        left: 18px;
+      }
+
+      .stage-character::after {
+        right: 18px;
+      }
+
+      .speaker-panel {
+        border-left: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .speaker-overlay {
+        position: absolute;
+        right: 18px;
+        top: 18px;
+        z-index: 3;
+        width: min(340px, calc(100% - 36px));
+        border: 1px solid rgba(36, 107, 254, 0.22);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 18px 42px rgba(28, 38, 58, 0.16);
+        overflow: hidden;
+      }
+
+      .speaker-overlay-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 11px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .speaker-overlay-head strong {
+        font-size: 13px;
+      }
+
+      .speaker-overlay-body {
+        display: grid;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .prompt-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 8px;
+        align-items: center;
+        padding: 8px;
+        border-radius: 8px;
+        background: var(--panel-soft);
+      }
+
+      .prompt-card.primary {
+        background: var(--blue-soft);
+      }
+
+      .prompt-card strong {
+        display: block;
+        font-size: 12px;
+      }
+
+      .prompt-card span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .prompt-card button {
+        min-height: 28px;
+        padding: 0 8px;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .capture-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding: 9px 10px;
+        border-top: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .capture-pill {
+        padding: 7px 5px;
+        border-radius: 8px;
+        background: var(--panel-soft);
+        text-align: center;
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .capture-pill.done {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+
+      .speaker-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .speaker-tabs span {
+        display: grid;
+        place-items: center;
+        height: 48px;
+        color: var(--muted);
+        font-weight: 850;
+      }
+
+      .speaker-tabs span.active {
+        color: var(--ink);
+        border-bottom: 3px solid var(--amber);
+      }
+
+      .ai-care-panel {
+        margin: 12px;
+        padding: 12px;
+        border: 1px solid #d7e4f4;
+        border-radius: 8px;
+        background: #f8fbff;
+      }
+
+      .ai-care-panel h3 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 0 0 10px;
+        font-size: 14px;
+      }
+
+      .care-task {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 8px;
+        align-items: center;
+        padding: 9px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .care-task:first-of-type {
+        border-top: 0;
+      }
+
+      .care-task button {
+        min-height: 30px;
+        padding: 0 9px;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 850;
+      }
+
+      .student-side {
+        display: grid;
+        gap: 8px;
+        max-height: 250px;
+        padding: 0 12px 12px;
+        overflow: auto;
+      }
+
+      .student-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 10px;
+        align-items: center;
+        min-height: 42px;
+      }
+
+      .student-row .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+      }
+
+      .speaker-tools {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 8px;
+        padding: 10px 12px;
+        border-top: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .tool {
+        display: grid;
+        place-items: center;
+        gap: 5px;
+        min-height: 46px;
+        border-radius: 8px;
+        background: var(--panel-soft);
+        color: #3b4658;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .tool i {
+        width: 18px;
+        height: 18px;
+      }
+
+      .phone-wrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .phone {
+        max-width: 360px;
+        border: 10px solid #1f2734;
+        border-radius: 30px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 22px 48px rgba(28, 38, 58, 0.18);
+      }
+
+      .phone-status {
+        height: 24px;
+        background: #1f2734;
+      }
+
+      .diary-head {
+        padding: 16px;
+        background: linear-gradient(135deg, #fff4dc, #eaf1ff);
+      }
+
+      .diary-head h3 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .diary-head p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .stage-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-top: 13px;
+      }
+
+      .stage-pill {
+        min-height: 52px;
+        padding: 8px 6px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+        text-align: center;
+        font-size: 11px;
+        font-weight: 860;
+      }
+
+      .stage-pill.active {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .diary-body {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+        background: #f6f8fb;
+      }
+
+      .diary-card {
+        position: relative;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .diary-card h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+
+      .diary-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .growth-bars {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .growth-row {
+        display: grid;
+        grid-template-columns: 62px 1fr 32px;
+        gap: 7px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .clip {
+        min-height: 128px;
+        border-radius: 8px;
+        background:
+          linear-gradient(145deg, rgba(36, 107, 254, 0.78), rgba(15, 159, 114, 0.72)),
+          #d9e7fb;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 42px;
+      }
+
+      .explain-stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .explain-card {
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .explain-card h3 {
+        margin: 0 0 8px;
+        font-size: 15px;
+      }
+
+      .explain-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .boundary {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 10px;
+        align-items: stretch;
+        padding: 14px;
+      }
+
+      .boundary-box {
+        padding: 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .boundary-box.live {
+        border-color: rgba(36, 107, 254, 0.34);
+        background: var(--blue-soft);
+      }
+
+      .boundary-box h4 {
+        margin: 0 0 9px;
+        font-size: 14px;
+      }
+
+      .boundary-box ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .arrow-mid {
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+      }
+
+      .note-panel {
+        position: fixed;
+        right: 18px;
+        top: 18px;
+        z-index: 30;
+        width: min(392px, calc(100vw - 32px));
+        max-height: calc(100vh - 36px);
+        transform: translateX(16px);
+        opacity: 0;
+        pointer-events: none;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 22px 58px rgba(20, 28, 42, 0.18);
+        overflow: auto;
+        transition: 0.18s ease;
+      }
+
+      .note-panel.show {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .note-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .note-head h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .note-body {
+        padding: 14px;
+      }
+
+      .note-body p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.58;
+      }
+
+      .note-body ul {
+        margin: 0;
+        padding-left: 18px;
+        color: #3b4658;
+        font-size: 13px;
+        line-height: 1.7;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        left: 50%;
+        bottom: 12px;
+        z-index: 25;
+        display: none;
+        grid-template-columns: repeat(4, 1fr);
+        width: min(calc(100% - 24px), 460px);
+        min-height: 60px;
+        transform: translateX(-50%);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .mobile-nav button {
+        display: grid;
+        place-items: center;
+        gap: 2px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .mobile-nav i {
+        width: 18px;
+        height: 18px;
+      }
+
+      .mobile-nav button.active {
+        color: var(--blue);
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 86px;
+        z-index: 40;
+        max-width: min(92vw, 420px);
+        transform: translate(-50%, 12px);
+        opacity: 0;
+        padding: 10px 13px;
+        border-radius: 8px;
+        background: var(--dark);
+        color: #fff;
+        font-size: 13px;
+        line-height: 1.45;
+        box-shadow: 0 14px 30px rgba(23, 32, 47, 0.22);
+        pointer-events: none;
+        transition: 0.18s ease;
+      }
+
+      .toast.show {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+
+      @media (max-width: 1180px) {
+        .grid.four {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid.three,
+        .funnel {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid.two,
+        .asset-lane,
+        .phone-wrap {
+          grid-template-columns: 1fr;
+        }
+
+        .speaker-top {
+          grid-template-columns: repeat(4, minmax(90px, 1fr));
+        }
+
+        .speaker-body {
+          grid-template-columns: 1fr;
+        }
+
+        .speaker-panel {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+        }
+      }
+
+      @media (max-width: 820px) {
+        .app {
+          display: block;
+        }
+
+        .sidebar {
+          display: none;
+        }
+
+        .main {
+          padding: 14px 12px 90px;
+        }
+
+        .mobile-nav {
+          display: grid;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .top-actions {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 2px;
+        }
+
+        .page-title h2 {
+          font-size: 20px;
+        }
+
+        .grid.four,
+        .grid.three,
+        .funnel,
+        .quality {
+          grid-template-columns: 1fr;
+        }
+
+        .metric {
+          min-height: 108px;
+        }
+
+        .boundary {
+          grid-template-columns: 1fr;
+        }
+
+        .arrow-mid {
+          display: none;
+        }
+
+        .table-wrap {
+          overflow-x: auto;
+        }
+
+        .table {
+          min-width: 720px;
+        }
+
+        .speaker-top {
+          grid-template-columns: repeat(2, minmax(120px, 1fr));
+        }
+
+        .course-stage {
+          min-height: 420px;
+        }
+
+        .stage-title {
+          font-size: 23px;
+        }
+
+        .block-demo {
+          left: 16%;
+          top: 34%;
+          width: 70%;
+        }
+
+        .block {
+          font-size: 18px;
+        }
+
+        .speaker-tools {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .phone {
+          margin: 0 auto;
+        }
+      }
+
+      @media (max-width: 460px) {
+        .main {
+          padding-inline: 10px;
+        }
+
+        .panel-head {
+          padding: 12px;
+        }
+
+        .metric-value {
+          font-size: 28px;
+        }
+
+        .list-item {
+          grid-template-columns: auto 1fr;
+        }
+
+        .list-item .primary-btn,
+        .list-item .ghost-btn,
+        .list-item .text-btn {
+          grid-column: 1 / -1;
+          width: 100%;
+        }
+
+        .proof-card {
+          grid-template-columns: 1fr;
+        }
+
+        .bar-row,
+        .growth-row {
+          grid-template-columns: 72px 1fr 42px;
+        }
+
+        .speaker-top {
+          grid-template-columns: 1fr;
+        }
+
+        .speaker-tools {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .phone {
+          max-width: 100%;
+          border-width: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark"><i data-lucide="radio"></i></div>
+          <div>
+            <h1>直播服务资产体系</h1>
+            <p>直播侧生产 · 多端消费</p>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Demo 切换">
+          <button class="nav-btn active" type="button" data-view="overview">
+            <i data-lucide="layout-dashboard"></i><span>管理大盘</span><small>Web</small>
+          </button>
+          <button class="nav-btn" type="button" data-view="session">
+            <i data-lucide="package-check"></i><span>单场资产</span><small>Web</small>
+          </button>
+          <button class="nav-btn" type="button" data-view="speaker">
+            <i data-lucide="screen-share"></i><span>主讲采集</span><small>端内</small>
+          </button>
+          <button class="nav-btn" type="button" data-view="diary">
+            <i data-lucide="book-heart"></i><span>成长日记</span><small>学生端</small>
+          </button>
+        </nav>
+
+        <section class="side-card">
+          <strong>协作提示</strong>
+          <p>直播先把课中发生的好内容变成标准资产，再交给不同场景使用。</p>
+          <button class="text-btn note-trigger" type="button" data-note="boundary"><i data-lucide="info"></i>查看边界</button>
+        </section>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="page-title">
+            <h2 id="viewTitle">管理大盘：直播整体监测与掌控</h2>
+            <p id="viewSubtitle">给管理层、产品和运营看直播是否真的在关键节点产生服务资产和增长贡献。</p>
+          </div>
+          <div class="top-actions">
+            <select class="select" aria-label="业务线">
+              <option>全部业务线</option>
+              <option>前端体验课</option>
+              <option>后端年课</option>
+              <option>小灶服务课</option>
+            </select>
+            <button class="text-btn note-trigger" type="button" data-note="ai-map"><i data-lucide="sparkles"></i>AI 用法</button>
+            <button class="icon-btn toast-btn" type="button" data-toast="已刷新直播数据" aria-label="刷新"><i data-lucide="refresh-cw"></i></button>
+          </div>
+        </header>
+
+        <section class="view active" id="overview">
+          <div class="grid four">
+            <article class="metric">
+              <button class="note-dot ai corner-note note-trigger" type="button" data-note="overview-ai">AI</button>
+              <div class="metric-label">
+                <i data-lucide="radio-tower"></i>
+                <span class="term" tabindex="0" data-tip="已配置直播承接的关键业务节点占比，例如课前激活、阶段展示、低活跃召回、转化前确认。">关键节点覆盖</span>
+              </div>
+              <div class="metric-value">73%</div>
+              <div class="metric-note">课前激活、阶段成果、低活跃召回、转化前直播</div>
+            </article>
+            <article class="metric">
+              <div class="metric-label">
+                <i data-lucide="hand-heart"></i>
+                <span class="term" tabindex="0" data-tip="重点名单内学生至少完成一次有效关注动作的占比。有效关注可以是点名、上台、作品展示、奖励或老师回应。">重点关注覆盖</span>
+              </div>
+              <div class="metric-value">84%</div>
+              <div class="metric-note"><span class="up">+17%</span> 较普通互动场提升</div>
+            </article>
+            <article class="metric">
+              <button class="note-dot corner-note note-trigger" type="button" data-note="asset-def">?</button>
+              <div class="metric-label">
+                <i data-lucide="file-heart"></i>
+                <span class="term" tabindex="0" data-tip="直播结束后能进入学生端或内部承接流程的资产占比，包含片段、截图、成长摘要和推荐动作。">资产生成率</span>
+              </div>
+              <div class="metric-value">68%</div>
+              <div class="metric-note">含表现卡、回放片段、作品截图、跟进建议</div>
+            </article>
+            <article class="metric">
+              <button class="note-dot corner-note note-trigger" type="button" data-note="value-target">?</button>
+              <div class="metric-label">
+                <i data-lucide="trending-up"></i>
+                <span class="term" tabindex="0" data-tip="参与直播后的 7 天内，学生继续完成录播课或进入学习任务的变化。">直播后 7 日到课</span>
+              </div>
+              <div class="metric-value">+8.7%</div>
+              <div class="metric-note">试点班级对比未参与直播人群</div>
+            </article>
+          </div>
+
+          <div class="grid two" style="margin-top: 14px">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">资产生产漏斗</h3>
+                  <p class="panel-meta">把直播过程拆成可监测的生产链路，避免只看热闹程度。</p>
+                </div>
+                <button class="note-dot ai note-trigger" type="button" data-note="asset-funnel">AI</button>
+              </div>
+              <div class="funnel">
+                <div class="funnel-step">
+                  <div class="funnel-icon"><i data-lucide="user-check"></i></div>
+                  <strong><span class="term" tabindex="0" data-tip="本场被提前标记为需要服务或观察的学生，实际进入直播间的比例。">重点到场</span> 86%</strong>
+                  <span>本场目标名单中实际进入直播间的学生占比。</span>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-icon"><i data-lucide="badge-check"></i></div>
+                  <strong><span class="term" tabindex="0" data-tip="学生在课中获得了有记录的关注动作，例如点名、上台、展示、奖励、答疑回应。">有效关注</span> 84%</strong>
+                  <span>点名、上台、展示、奖励、互动回应至少一次。</span>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-icon"><i data-lucide="sparkles"></i></div>
+                  <strong><span class="term" tabindex="0" data-tip="候选素材通过清晰度、完整度、内容正向性、隐私风险和业务可用性的检查。">素材合格</span> 68%</strong>
+                  <span>AI 质检通过，适合给家长或内部跟进使用。</span>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-icon"><i data-lucide="send"></i></div>
+                  <strong><span class="term" tabindex="0" data-tip="合格资产进入对应使用场景的比例，例如学生端成长日记、内部跟进任务或服务提醒。">已分发</span> 52%</strong>
+                  <span>进入学生端成长日记，或同步到内部承接流程。</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">管理层直播监测</h3>
+                  <p class="panel-meta">看场景、人群、质量、后续指标，不陷入单场细节。</p>
+                </div>
+                <button class="note-dot note-trigger" type="button" data-note="manager">?</button>
+              </div>
+              <div class="chart">
+                <div class="bar-row"><span>体验课转化场</span><div class="bar-track"><div class="bar-fill" style="width: 82%"></div></div><strong>82%</strong></div>
+                <div class="bar-row"><span>阶段成果场</span><div class="bar-track"><div class="bar-fill" style="width: 76%"></div></div><strong>76%</strong></div>
+                <div class="bar-row"><span>低活跃召回</span><div class="bar-track"><div class="bar-fill" style="width: 54%"></div></div><strong>54%</strong></div>
+                <div class="bar-row"><span>大履约场</span><div class="bar-track"><div class="bar-fill" style="width: 67%"></div></div><strong>67%</strong></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="grid two" style="margin-top: 14px">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">直播场次效果排行</h3>
+                  <p class="panel-meta">用于定位最佳场景模板、主讲方法和异常场次。</p>
+                </div>
+                <span class="tag green"><i data-lucide="circle-check"></i>本周</span>
+              </div>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>场景</th>
+                      <th>服务目标</th>
+                      <th>资产生成</th>
+                      <th>家长打开</th>
+                      <th>后续变化</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Python 第 4 节成果场</strong><small>小灶服务直播</small></td>
+                      <td><span class="tag blue"><span class="term" tabindex="0" data-tip="录播学习到一个阶段后，用直播集中展示作品、表达和老师反馈。">阶段展示</span></span></td>
+                      <td>74 份</td>
+                      <td>47%</td>
+                      <td><span class="up">到课 +9.1%</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>C++ 体验转化场</strong><small>前端体验课</small></td>
+                      <td><span class="tag rose"><span class="term" tabindex="0" data-tip="在转化或续报前，用直播增强家长信任和孩子参与动机。">转化助攻</span></span></td>
+                      <td>91 份</td>
+                      <td>51%</td>
+                      <td><span class="up">意向 +6.4%</span></td>
+                    </tr>
+                    <tr>
+                      <td><strong>图形化召回场</strong><small>低活跃人群</small></td>
+                      <td><span class="tag amber"><span class="term" tabindex="0" data-tip="面向低活跃或学习中断学生，用直播重新激发参与。">召回</span></span></td>
+                      <td>52 份</td>
+                      <td>39%</td>
+                      <td><span class="warn">待观察</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">资产流向</h3>
+                  <p class="panel-meta">一场直播结束后，资产去向必须清晰，否则高光只会停留在回放里。</p>
+                </div>
+                <button class="note-dot edge note-trigger" type="button" data-note="crm-diff">边</button>
+              </div>
+              <div class="boundary">
+                <div class="boundary-box live">
+                  <h4>直播内生成</h4>
+                  <ul>
+                    <li>上台、发言、作品展示</li>
+                    <li>老师表扬、互动奖励</li>
+                    <li>家长观看与课堂参与</li>
+                    <li>AI 片段和摘要候选</li>
+                  </ul>
+                </div>
+                <div class="arrow-mid"><i data-lucide="arrow-right"></i></div>
+                <div class="boundary-box">
+                  <h4>课后使用</h4>
+                  <ul>
+                    <li>学生端展示成长证据</li>
+                    <li>内部任务承接重点学员</li>
+                    <li>直播后台监测整体质量</li>
+                    <li>业务复盘不同场景效果</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="session">
+          <div class="grid four">
+            <article class="metric">
+              <div class="metric-label">
+                <i data-lucide="users"></i>
+                <span class="term" tabindex="0" data-tip="本场直播需要优先关注的人群，由业务目标、学习状态和家长行为共同决定。">重点名单</span>
+              </div>
+              <div class="metric-value">86</div>
+              <div class="metric-note">高意向 18 · 待召回 24 · 成果展示 44</div>
+            </article>
+            <article class="metric">
+              <div class="metric-label">
+                <i data-lucide="mic-vocal"></i>
+                <span class="term" tabindex="0" data-tip="能被记录为服务资产来源的互动，不等同于普通点击或刷屏。">有效互动</span>
+              </div>
+              <div class="metric-value">212</div>
+              <div class="metric-note">上台、点名、答题、展示、奖励自动归档</div>
+            </article>
+            <article class="metric">
+              <button class="note-dot ai corner-note note-trigger" type="button" data-note="quality-ai">AI</button>
+              <div class="metric-label">
+                <i data-lucide="scan-eye"></i>
+                <span class="term" tabindex="0" data-tip="AI 先做可用性判断，人工只处理低分或高价值素材，减少课后整理成本。">AI 质检通过</span>
+              </div>
+              <div class="metric-value">61</div>
+              <div class="metric-note">可直接进入家长表现卡或内部跟进卡</div>
+            </article>
+            <article class="metric">
+              <div class="metric-label"><i data-lucide="route"></i>分发状态</div>
+              <div class="metric-value">52%</div>
+              <div class="metric-note">学生端 38 · 内部承接 32 · 服务提醒 12</div>
+            </article>
+          </div>
+
+          <div class="grid two" style="margin-top: 14px">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">单场直播资产详情</h3>
+                  <p class="panel-meta">从直播源信号到课后资产，明确哪些内容由直播侧生产。</p>
+                </div>
+                <button class="note-dot note-trigger" type="button" data-note="session-model">?</button>
+              </div>
+              <div class="asset-lane">
+                <div class="ai-flow">
+                  <article class="ai-step">
+                    <span class="ai-step-icon"><i data-lucide="scan-search"></i></span>
+                    <div><strong>高光识别</strong><span>识别上台发言、老师表扬、作品展示、答题爆点。</span></div>
+                    <span class="tag purple">AI</span>
+                  </article>
+                  <article class="ai-step">
+                    <span class="ai-step-icon"><i data-lucide="scissors"></i></span>
+                    <div><strong>片段拼接</strong><span>自动拼接孩子画面、课件画面、代码结果和字幕。</span></div>
+                    <span class="tag purple">AI</span>
+                  </article>
+                  <article class="ai-step">
+                    <span class="ai-step-icon"><i data-lucide="badge-plus"></i></span>
+                    <div><strong>动画包装</strong><span>加片头、荣誉徽章、作品完成动效和关键字幕。</span></div>
+                    <span class="tag amber">包装</span>
+                  </article>
+                  <article class="ai-step">
+                    <span class="ai-step-icon"><i data-lucide="message-square-quote"></i></span>
+                    <div><strong>老师推荐语</strong><span>基于学生表现生成克制、可追溯的老师评价候选。</span></div>
+                    <span class="tag green">候选</span>
+                  </article>
+                  <article class="ai-step">
+                    <span class="ai-step-icon"><i data-lucide="shield-check"></i></span>
+                    <div><strong>质检路由</strong><span>判断适合学生端展示、内部承接，还是仅保留复盘。</span></div>
+                    <span class="tag blue">分发</span>
+                  </article>
+                </div>
+                <article class="asset-card large">
+                  <h4>家长表现卡预览 <button class="note-dot ai note-trigger" type="button" data-note="parent-card-ai">AI</button></h4>
+                  <div class="clip-builder">
+                    <div class="clip-strip">
+                      <div class="clip-frame">孩子上台<br />00:12-00:26</div>
+                      <div class="clip-frame">代码运行<br />00:27-00:38</div>
+                      <div class="clip-frame">老师表扬<br />00:39-00:46</div>
+                    </div>
+                    <div class="teacher-line">推荐老师语：小宇今天不只是完成作品，还能讲清楚自己为什么这样设计，表达比上次更主动。</div>
+                  </div>
+                  <div class="proof-card">
+                    <div>
+                      <span class="tag green"><i data-lucide="badge-check"></i>可发送</span>
+                      <h3 style="margin: 10px 0 6px">小宇完成 AI 小助手展示</h3>
+                      <p>直播中主动上台，独立讲解“语音回复逻辑”，老师给予正向点评。建议课后继续完成进阶挑战。</p>
+                    </div>
+                    <div class="code-shot" aria-label="作品截图"></div>
+                  </div>
+                  <div class="quality">
+                    <div><strong>92</strong><span class="term" tabindex="0" data-tip="综合画面、声音、内容完整度、正向表达和可展示程度的评分。">素材质量分</span></div>
+                    <div><strong>18m</strong><span>家长观看</span></div>
+                    <div><strong>高</strong><span class="term" tabindex="0" data-tip="结合孩子表现、家长观看和业务目标，判断课后是否需要优先承接。">跟进优先级</span></div>
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                    <button class="primary-btn toast-btn" type="button" data-toast="表现卡已进入学生端成长日记"><i data-lucide="book-heart"></i>进入成长日记</button>
+                    <button class="ghost-btn toast-btn" type="button" data-toast="跟进信号已同步给下游消费方"><i data-lucide="send"></i>同步下游</button>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h3 class="panel-title">重点学员资产队列</h3>
+                  <p class="panel-meta">课后不是剪一堆视频，而是形成可处理的资产队列。</p>
+                </div>
+                <span class="tag amber">待确认 13</span>
+              </div>
+              <div class="list">
+                <div class="list-item">
+                  <div class="avatar blue">宇</div>
+                  <div class="item-copy"><strong>小宇 · 高意向</strong><span>上台展示、家长观看 18 分钟、作品完成</span></div>
+                  <button class="primary-btn toast-btn" type="button" data-toast="已确认小宇资产"><i data-lucide="check"></i>确认</button>
+                </div>
+                <div class="list-item">
+                  <div class="avatar green">然</div>
+                  <div class="item-copy"><strong>然然 · 可转化</strong><span>Bonus Time 完成额外挑战，互动全对</span></div>
+                  <button class="primary-btn toast-btn" type="button" data-toast="已确认然然资产"><i data-lucide="check"></i>确认</button>
+                </div>
+                <div class="list-item">
+                  <div class="avatar amber">辰</div>
+                  <div class="item-copy"><strong>辰辰 · 待召回</strong><span>低活跃后到场，参与分组但作品未完成</span></div>
+                  <button class="ghost-btn toast-btn" type="button" data-toast="已生成辅导承接建议"><i data-lucide="bell-plus"></i>承接</button>
+                </div>
+                <div class="list-item">
+                  <div class="avatar rose">一</div>
+                  <div class="item-copy"><strong>一一 · 需关怀</strong><span>沉默较久，点名后回应，家长未观看</span></div>
+                  <button class="ghost-btn toast-btn" type="button" data-toast="已标记为下次直播重点关注"><i data-lucide="bookmark-plus"></i>标记</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="speaker">
+          <section class="panel pad" style="margin-bottom: 14px">
+            <button class="note-dot ai corner-note note-trigger" type="button" data-note="speaker-ai">AI</button>
+            <h3 class="panel-title">主讲端：少量提醒 + 自动采集</h3>
+            <p class="panel-meta">课中不给老师增加新工作台，只在关键时刻浮出 1-3 个推荐动作，其余高光识别、片段截取和数据归档自动完成。</p>
+          </section>
+
+          <div class="speaker-shell">
+            <div class="speaker-top">
+              <div class="video-tile"><span class="video-face"></span><span class="coin">9999</span><span class="mic-line"><i data-lucide="mic"></i>芝麻指导师</span></div>
+              <div class="video-tile"><span class="video-face"></span><span class="coin">12</span><span class="mic-line"><i data-lucide="mic"></i>小宇</span></div>
+              <div class="video-tile"><span class="video-face"></span><span class="coin">12</span><span class="mic-line"><i data-lucide="mic"></i>然然</span></div>
+              <div class="video-tile"><span class="video-face"></span><span class="coin">7</span><span class="mic-line"><i data-lucide="mic-off"></i>辰辰</span></div>
+              <div class="video-tile"><span class="video-face"></span><span class="coin">262</span><span class="mic-line"><i data-lucide="mic"></i>一一</span></div>
+              <div class="video-tile"><span class="video-face"></span><span class="coin">88</span><span class="mic-line"><i data-lucide="mic"></i>小桃</span></div>
+              <div class="video-tile"><span class="video-face"></span><span class="coin">36</span><span class="mic-line"><i data-lucide="mic"></i>小小</span></div>
+              <button class="icon-btn note-trigger" type="button" data-note="speaker-existing" aria-label="主讲端说明"><i data-lucide="info"></i></button>
+            </div>
+            <div class="speaker-body">
+              <div class="course-stage">
+                <button class="note-dot ai corner-note note-trigger" type="button" data-note="auto-highlight">AI</button>
+                <div class="stage-title"><span>温故知新</span><span class="tag amber">投票进行中</span></div>
+                <div class="speaker-overlay">
+                  <div class="speaker-overlay-head">
+                    <strong>本环节推荐</strong>
+                    <button class="note-dot ai note-trigger" type="button" data-note="care-panel">AI</button>
+                  </div>
+                  <div class="speaker-overlay-body">
+                    <div class="prompt-card primary">
+                      <div class="avatar blue">宇</div>
+                      <div><strong>让小宇上台展示</strong><span>作品已完成，家长在线 18m，适合形成高光。</span></div>
+                      <button class="toast-btn" type="button" data-toast="已加入上台队列">上台</button>
+                    </div>
+                    <div class="prompt-card">
+                      <div class="avatar amber">辰</div>
+                      <div><strong>点名鼓励辰辰</strong><span>低活跃到场，本环节还没有有效回应。</span></div>
+                      <button class="toast-btn" type="button" data-toast="已生成点名提示">点名</button>
+                    </div>
+                    <div class="prompt-card">
+                      <span class="ai-step-icon"><i data-lucide="sparkles"></i></span>
+                      <div><strong>已捕捉 2 个候选高光</strong><span>系统自动截取前后 30 秒，课后进入质检。</span></div>
+                      <button class="toast-btn" type="button" data-toast="候选高光已标记">标记</button>
+                    </div>
+                  </div>
+                  <div class="capture-strip">
+                    <div class="capture-pill done">覆盖 72%</div>
+                    <div class="capture-pill done">高光 2</div>
+                    <div class="capture-pill">待关注 9</div>
+                    <div class="capture-pill">操作 1m</div>
+                  </div>
+                </div>
+                <div class="block-demo">
+                  <div class="block">面向 <small>狮身人面像</small></div>
+                  <div class="block">方向 <small>-120</small></div>
+                </div>
+                <div class="stage-character"></div>
+              </div>
+              <aside class="speaker-panel">
+                <div class="speaker-tabs">
+                  <span>聊天</span><span class="active">学生</span><span>数据</span>
+                </div>
+                <div class="ai-care-panel">
+                  <h3>本场轻数据 <button class="note-dot note-trigger" type="button" data-note="speaker-data">?</button></h3>
+                  <div class="mini-metrics">
+                    <div class="mini-metric"><strong>72%</strong><span>重点关注</span></div>
+                    <div class="mini-metric"><strong>2</strong><span>候选高光</span></div>
+                    <div class="mini-metric"><strong>9</strong><span>待补关注</span></div>
+                  </div>
+                </div>
+                <div class="student-side">
+                  <div class="student-row"><div class="avatar blue">宇</div><div class="item-copy"><strong>小宇</strong><span>已关注 2 次</span></div></div>
+                  <div class="student-row"><div class="avatar green">然</div><div class="item-copy"><strong>然然</strong><span>高光待确认</span></div></div>
+                  <div class="student-row"><div class="avatar amber">辰</div><div class="item-copy"><strong>辰辰</strong><span>需课后承接</span></div></div>
+                  <div class="student-row"><div class="avatar rose">一</div><div class="item-copy"><strong>一一</strong><span>本场未被展示</span></div></div>
+                </div>
+              </aside>
+            </div>
+            <div class="speaker-tools">
+              <button class="tool"><i data-lucide="mic"></i>麦克风</button>
+              <button class="tool"><i data-lucide="video"></i>摄像头</button>
+              <button class="tool"><i data-lucide="pen-line"></i>画笔</button>
+              <button class="tool"><i data-lucide="briefcase"></i>工具</button>
+              <button class="tool note-trigger" type="button" data-note="one-click-highlight"><i data-lucide="sparkles"></i>高光</button>
+              <button class="tool"><i data-lucide="scissors"></i>截图</button>
+              <button class="tool"><i data-lucide="screen-share"></i>共享屏幕</button>
+              <button class="tool"><i data-lucide="square"></i>结束直播</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="diary">
+          <div class="phone-wrap">
+            <div class="explain-stack">
+              <article class="explain-card">
+                <h3>学生端/家长端：成长日记</h3>
+                <p>学生端成长日记负责让家长和孩子直接感知“被关注、被展示、在进步”。它不是内部素材库，而是直播价值在用户侧的长期沉淀。</p>
+              </article>
+              <article class="explain-card">
+                <button class="note-dot ai corner-note note-trigger" type="button" data-note="diary-ai">AI</button>
+                <h3>AI 在这里做什么</h3>
+                <p>AI 把直播回放、互动、作品结果和老师点评转成家长听得懂的成长摘要，并自动补字幕、封面、徽章和下一阶段建议。</p>
+              </article>
+              <article class="explain-card">
+                <button class="note-dot edge corner-note note-trigger" type="button" data-note="crm-diff">边</button>
+                <h3>对外只讲成长</h3>
+                <p>家长看到的是孩子阶段变化，不需要看到内部判断。内部系统可以消费同一份资产，但学生端只呈现成长证据。</p>
+              </article>
+            </div>
+
+            <div class="phone">
+              <div class="phone-status"></div>
+              <div class="diary-head">
+                <h3>小宇的编程成长日记</h3>
+                <p>本阶段完成 4 节录播课，参与 1 场成果直播，生成 3 个高光记录。</p>
+                <div class="stage-strip">
+                  <div class="stage-pill">第1节<br />认识指令</div>
+                  <div class="stage-pill">第2节<br />角色运动</div>
+                  <div class="stage-pill">第3节<br />方向控制</div>
+                  <div class="stage-pill active">直播<br />成果展示</div>
+                </div>
+              </div>
+              <div class="diary-body">
+                <article class="diary-card">
+                  <button class="note-dot ai corner-note note-trigger" type="button" data-note="parent-summary">AI</button>
+                  <h4><i data-lucide="sparkles"></i>阶段成长摘要</h4>
+                  <p>小宇本阶段能独立完成角色方向控制，并在直播中主动上台讲解作品思路。相比上一次，表达更主动，调试时能说出自己的判断。</p>
+                </article>
+                <article class="diary-card">
+                  <h4><i data-lucide="video"></i>直播高光</h4>
+                  <div class="clip"><i data-lucide="play"></i></div>
+                  <p style="margin-top: 8px">AI 已补字幕 · 自动加作品徽章 · 上台展示 42 秒</p>
+                </article>
+                <article class="diary-card">
+                  <h4><i data-lucide="chart-no-axes-combined"></i>能力变化</h4>
+                  <div class="growth-bars">
+                    <div class="growth-row"><span>表达</span><div class="bar-track"><div class="bar-fill" style="width: 78%"></div></div><strong>+18</strong></div>
+                    <div class="growth-row"><span>调试</span><div class="bar-track"><div class="bar-fill" style="width: 66%"></div></div><strong>+12</strong></div>
+                    <div class="growth-row"><span>作品</span><div class="bar-track"><div class="bar-fill" style="width: 84%"></div></div><strong>+21</strong></div>
+                  </div>
+                </article>
+                <article class="diary-card">
+                  <h4><i data-lucide="target"></i>下一阶段挑战</h4>
+                  <p>建议完成“让角色自动巡逻”的进阶任务，下次直播可优先展示调试过程。</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="mobile-nav" aria-label="移动端导航">
+      <button class="mobile-btn active" type="button" data-view="overview"><i data-lucide="layout-dashboard"></i><span>大盘</span></button>
+      <button class="mobile-btn" type="button" data-view="session"><i data-lucide="package-check"></i><span>资产</span></button>
+      <button class="mobile-btn" type="button" data-view="speaker"><i data-lucide="screen-share"></i><span>主讲</span></button>
+      <button class="mobile-btn" type="button" data-view="diary"><i data-lucide="book-heart"></i><span>成长</span></button>
+    </nav>
+
+    <aside class="note-panel" id="notePanel" aria-live="polite">
+      <div class="note-head">
+        <h3 id="noteTitle">说明</h3>
+        <button class="icon-btn" type="button" id="closeNote" aria-label="关闭说明"><i data-lucide="x"></i></button>
+      </div>
+      <div class="note-body">
+        <p id="noteText"></p>
+        <ul id="noteList"></ul>
+      </div>
+    </aside>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const viewCopy = {
+        overview: {
+          title: "管理大盘：直播整体监测与掌控",
+          subtitle: "给管理层、产品和运营看直播是否真的在关键节点产生服务资产和增长贡献。",
+        },
+        session: {
+          title: "单场资产：直播后服务资产生产与分发",
+          subtitle: "围绕一场阶段成果直播，展示从源信号到表现卡、跟进卡、效果复盘的完整链路。",
+        },
+        speaker: {
+          title: "主讲端：轻提醒与自动采集",
+          subtitle: "基于现有主讲端形态，只浮出少量关键推荐，其余素材识别、片段截取和数据归档自动完成。",
+        },
+        diary: {
+          title: "成长日记：学生端/家长端可见的直播价值",
+          subtitle: "把直播资产从内部素材变成用户能感知的阶段成长证据。",
+        },
+      };
+
+      const notes = {
+        boundary: {
+          title: "边界：直播生产资产，下游消费资产",
+          text: "你掌控的是主讲端、学生端和直播后台，所以直播方向不应该接管 CRM 或辅导端工作流，而是做上游资产生产和用户感知闭环。",
+          list: [
+            "主讲端：课中产生关注动作和高光记录。",
+            "直播后台：管理资产标准、质检、分发状态和效果监测。",
+            "学生端：展示成长日记，让家长和孩子看到阶段变化。",
+            "CRM/辅导端：消费直播资产，做销售跟进和日常服务承接。",
+          ],
+        },
+        "ai-map": {
+          title: "AI 使用地图",
+          text: "AI 不建议先做成一个泛泛的聊天助手，而应该嵌入直播资产链路里的关键步骤。",
+          list: [
+            "课前：根据学员状态推荐本场重点名单和关注动作。",
+            "课中：识别沉默、作品完成、家长在线等信号，只给老师 1-3 个可执行推荐。",
+            "课后：自动识别高光，拼接孩子画面、课件、代码结果，补字幕和封面。",
+            "包装：自动加作品徽章、阶段成就动画、关键字幕和片头片尾。",
+            "表达：生成老师推荐语、家长成长摘要、内部跟进建议，并保留人工确认。",
+            "后台：做素材质检、异常场次总结、效果归因和模板优化建议。",
+          ],
+        },
+        "asset-def": {
+          title: "什么算一份服务资产",
+          text: "不是所有课中互动都算资产。资产必须能被用户或内部角色再次使用，并且能追溯到真实直播行为。",
+          list: [
+            "对家长：高光片段、作品截图、成长摘要、老师评价。",
+            "对孩子：阶段成就、作品记录、下一步挑战。",
+            "对内部：重点信号、建议动作、素材质量分、承接优先级。",
+          ],
+        },
+        "overview-ai": {
+          title: "AI 大盘摘要",
+          text: "管理层不需要逐场看回放，AI 可以自动汇总本周直播问题和机会。",
+          list: [
+            "识别哪些场景关注覆盖低，但后续到课提升明显。",
+            "总结主讲高效动作，例如哪类点名或展示更容易产生家长打开。",
+            "发现异常：素材生成率低、家长打开低、重点到场低。",
+          ],
+        },
+        "value-target": {
+          title: "建议目标口径",
+          text: "不要只用互动率证明直播价值，建议绑定一个后续链路指标，先在试点班级验证。",
+          list: [
+            "短期：重点关注覆盖 80%+，可分发资产生成率 60%+。",
+            "中期：素材打开率 40%+，重点学员 24 小时触达 90%+。",
+            "业务：直播后 7 日录播到课提升 5%-10%，转化或续报意向提升 3%-6%。",
+          ],
+        },
+        "asset-funnel": {
+          title: "资产生产漏斗",
+          text: "这套漏斗可以成为直播后台的核心模型，管理直播是否真的产出服务资产。",
+          list: [
+            "不是所有直播互动都值得沉淀，必须经过有效关注和素材质检。",
+            "AI 可以减少人工剪辑和人工判断，但质检规则需要直播侧定义。",
+            "漏斗掉点能反推产品问题：课中未触发、素材不可用、家长端不打开、下游不用。",
+          ],
+        },
+        manager: {
+          title: "管理层看什么",
+          text: "管理层关心的是直播作为关键服务节点是否可规模化、可复用、可证明。",
+          list: [
+            "哪些业务线直播覆盖不足。",
+            "哪类直播模板的业务结果最好。",
+            "主讲/场次/人群之间的效果差异。",
+            "直播资产是否真的被家长、CRM、辅导端消费。",
+          ],
+        },
+        "crm-diff": {
+          title: "和 CRM 的差异",
+          text: "CRM 可以把小灶课回放拼接分析后放到学生列表，但那更偏销售工作流。直播侧要做得更上游。",
+          list: [
+            "CRM 关注谁该跟进，直播关注什么内容值得成为资产。",
+            "CRM 消费结果，直播定义源数据、采集方式、质检标准和用户展示。",
+            "直播侧做成长日记，可以直接影响家长和孩子的长期感知。",
+            "双方最好通过标准资产字段协作，而不是重复做回放分析。",
+          ],
+        },
+        "session-model": {
+          title: "单场资产模型",
+          text: "每场直播结束后，后台自动把课中行为整理为三类资产。",
+          list: [
+            "家长资产：表现卡、成长摘要、作品截图、高光片段。",
+            "内部资产：跟进建议、优先级、风险标签、下次关注建议。",
+            "管理资产：场次目标、漏斗、素材质量、后续效果。",
+          ],
+        },
+        "quality-ai": {
+          title: "AI 素材质检",
+          text: "AI 不只是分析指标，也承担片段生产前的质量判断。",
+          list: [
+            "画面是否清晰，声音是否可听，片段是否完整。",
+            "是否包含明确表现：发言、展示、完成任务、老师表扬。",
+            "是否有不适合展示的内容：卡顿、负面反馈、隐私问题。",
+            "输出质量分和建议去向：学生端、内部承接、仅复盘。",
+          ],
+        },
+        "parent-card-ai": {
+          title: "AI 家长表现卡",
+          text: "AI 把课中碎片转译成家长能理解的成长语言和可观看素材，避免只是发送一段原始回放。",
+          list: [
+            "输入：高光片段、互动记录、作品结果、老师评价。",
+            "剪辑：拼接孩子露脸、课件动作、作品结果和老师点评。",
+            "包装：自动补字幕、封面、徽章、片头和作品完成动效。",
+            "输出：成长摘要、作品证据、高光视频、下一步建议。",
+            "可加人工确认，避免夸大和不准确。",
+          ],
+        },
+        "speaker-ai": {
+          title: "主讲端 AI 原则",
+          text: "AI 在主讲端应该是轻提醒，不是又一个任务系统。老师课中最多处理几个关键动作，其余交给自动采集。",
+          list: [
+            "给出 3 个以内最优先动作，不刷屏。",
+            "动作必须可一键执行：上台、点名、奖励、标记高光。",
+            "每个建议都要有原因：家长在线、作品完成、沉默太久、重点转化。",
+            "自动记录上下文：学生、环节、时间点、课件、互动结果。",
+          ],
+        },
+        "speaker-existing": {
+          title: "基于现有主讲端",
+          text: "参考你提供的主讲端截图，建议把能力做成轻提醒和底部高光入口，而不是重构直播间。",
+          list: [
+            "保留现有视频区、课件区、学生列表和工具栏。",
+            "新增关注台：显示本场重点学生和建议动作。",
+            "新增高光标记：让老师在自然操作中沉淀资产。",
+          ],
+        },
+        "auto-highlight": {
+          title: "自动高光识别",
+          text: "AI 可以结合直播信号自动捕捉高光，但最好保留老师确认。",
+          list: [
+            "检测上台发言、老师表扬、作品展示、答题正确、分组获胜。",
+            "自动生成候选高光，课后由老师或运营快速确认。",
+            "高光进入后台资产队列，不直接无审核发给家长。",
+          ],
+        },
+        "care-panel": {
+          title: "本环节推荐",
+          text: "课中只在合适时机浮出少量建议，老师看到的是“现在做什么”，不是完整的运营分析。",
+          list: [
+            "输入：重点名单、家长在线、互动状态、录播进度、历史关注缺口。",
+            "输出：上台、点名、奖励、展示、标记高光。",
+            "目标：降低主讲找人的成本，提高重点学员关注覆盖。",
+          ],
+        },
+        "speaker-data": {
+          title: "主讲端轻数据",
+          text: "课中数据只保留老师当下决策需要的最小集合，完整复盘放到直播后台。",
+          list: [
+            "重点关注覆盖：提醒是否还需要补关注。",
+            "候选高光数：告诉老师系统已经自动采集，无需课中反复确认。",
+            "待补关注：只暴露数量和少量学生，不展开复杂分析。",
+          ],
+        },
+        "one-click-highlight": {
+          title: "一键标记高光",
+          text: "这是连接主讲端和后台资产系统的关键动作。",
+          list: [
+            "老师点击后，系统自动截取前后 15-30 秒回放。",
+            "同步记录学生、动作类型、课件环节和互动上下文。",
+            "课后进入 AI 质检、自动剪辑、字幕包装和资产队列。",
+          ],
+        },
+        "diary-ai": {
+          title: "成长日记里的 AI",
+          text: "成长日记的 AI 重点是把复杂行为转成可信、克制、可理解的成长表达。",
+          list: [
+            "不要写成销售话术，要写成孩子成长证据。",
+            "避免过度夸张，所有结论要能追溯到直播行为或作品结果。",
+            "自动生成阶段对比：表达、调试、作品完成、主动参与。",
+            "为视频补字幕、封面、作品徽章和下一步挑战。",
+          ],
+        },
+        "parent-summary": {
+          title: "家长可见摘要",
+          text: "这个摘要是直播区别于 CRM 的关键：CRM 是内部跟进，成长日记是用户感知。",
+          list: [
+            "家长看到的是孩子阶段变化，而不是销售线索。",
+            "孩子看到的是自己的成就和下一步挑战。",
+            "直播团队掌控展示标准，保证外化内容和直播真实行为一致。",
+          ],
+        },
+      };
+
+      const navButtons = document.querySelectorAll(".nav-btn, .mobile-btn");
+      const views = document.querySelectorAll(".view");
+      const title = document.querySelector("#viewTitle");
+      const subtitle = document.querySelector("#viewSubtitle");
+      const notePanel = document.querySelector("#notePanel");
+      const noteTitle = document.querySelector("#noteTitle");
+      const noteText = document.querySelector("#noteText");
+      const noteList = document.querySelector("#noteList");
+      const toast = document.querySelector("#toast");
+
+      function switchView(viewName) {
+        navButtons.forEach((button) => button.classList.toggle("active", button.dataset.view === viewName));
+        views.forEach((view) => view.classList.toggle("active", view.id === viewName));
+        title.textContent = viewCopy[viewName].title;
+        subtitle.textContent = viewCopy[viewName].subtitle;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function showNote(noteId) {
+        const note = notes[noteId];
+        if (!note) return;
+        noteTitle.textContent = note.title;
+        noteText.textContent = note.text;
+        noteList.innerHTML = note.list.map((item) => `<li>${item}</li>`).join("");
+        notePanel.classList.add("show");
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => toast.classList.remove("show"), 1700);
+      }
+
+      document.body.addEventListener("click", (event) => {
+        const viewButton = event.target.closest("[data-view]");
+        if (viewButton) switchView(viewButton.dataset.view);
+
+        const noteButton = event.target.closest(".note-trigger");
+        if (noteButton) showNote(noteButton.dataset.note);
+
+        const toastButton = event.target.closest(".toast-btn");
+        if (toastButton) showToast(toastButton.dataset.toast);
+      });
+
+      document.querySelector("#closeNote").addEventListener("click", () => notePanel.classList.remove("show"));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") notePanel.classList.remove("show");
+      });
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    </script>
+  </body>
+</html>
